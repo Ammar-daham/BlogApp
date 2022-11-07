@@ -111,6 +111,10 @@
 		$('#newPost .modal-body .form-control').val('');  
 	});
 
+	$('#register').on('shown.bs.modal', function() {
+		$('#register .modal-body .form-control').val('');  
+	});
+
 	$(document).ready(function() {
 		getPosts(function(data) {
 			posts = data;
