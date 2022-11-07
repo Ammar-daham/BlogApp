@@ -1,0 +1,18 @@
+body {
+	padding-top: 100px;
+}
+
+
+.container > div {
+	margin-top: 10px;
+}
+
+#viewBody {
+	white-space: pre-wrap;
+}
+
+.card-warpper {
+	margin-bottom: 10px;
+}
+
+
