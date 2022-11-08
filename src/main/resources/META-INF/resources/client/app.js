@@ -145,6 +145,8 @@
 		$('#register').modal('hide');
 		createUser(user, function(data) {
 			users.push(data);
+			console.log(users)
+
 			//renderAllPosts();
 		})
 	});
@@ -167,8 +169,16 @@
 			password: $('#pws').val(),
 		};
 		login(user, function(data) {
-			users.push(data);
-			//renderAllPosts();
+			if(data.isLoggedIn) {
+				console.log(users)
+				location.href = 'home.html';
+			} else if(data.error){
+				console.log("Username or password wrong, please try again!")
+				var paragraph = document.getElementById("message");
+				var text = document.createTextNode("Username or password wrong, please try again!");
+
+				paragraph.appendChild(text);
+			}
 		})
 	});
 

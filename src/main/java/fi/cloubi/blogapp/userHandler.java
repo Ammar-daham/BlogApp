@@ -72,9 +72,7 @@ import java.io.BufferedReader;
 				Boolean isLoggedIn = false;
 				data.put("userId", userId);
 				data.put("isLoggedIn", isLoggedIn);
-				
-				System.out.println(data.getString("username"));
-				System.out.println(data.getString("password"));
+
 
 				array.put(data);
 
@@ -155,14 +153,16 @@ import java.io.BufferedReader;
 				if (user.getString("username").equals(data.getString("username")) &&
 				 user.getString("password").equals(data.getString("password"))) {
 					user.put("isLoggedIn", true);
-					System.out.println(true);
+					data.put("isLoggedIn", true);					
 				} else {
+					data.put("error", true);
 					System.out.println("Username or password wrong, please try again!");
 				}
 				
 			}
 			writeUsers(array);
 			writeJSONResponse(baseRequest, response, data.toString());
+			System.out.println(data.toString());
 
 		}
 
