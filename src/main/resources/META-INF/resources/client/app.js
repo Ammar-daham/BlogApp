@@ -149,4 +149,27 @@
 		})
 	});
 
+	function login(user, callback) {
+		$.ajax({
+			url: '/users/login',
+			dataType: 'json',
+			contentType: 'application/json; charset=UTF-8',
+			type: 'POST',
+			data: JSON.stringify(user),
+			timeout: 5 * 60 * 1000,
+			success: callback
+		});
+	}
+
+	$('#login-btn').click(function() {
+		var user = {
+			username: $('#username-login').val(),
+			password: $('#pws').val(),
+		};
+		login(user, function(data) {
+			users.push(data);
+			//renderAllPosts();
+		})
+	});
+
 })();
