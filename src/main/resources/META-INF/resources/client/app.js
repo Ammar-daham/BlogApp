@@ -142,13 +142,28 @@
 			password: $('#password').val(),
 			date: Date.now(),
 		};
-		$('#register').modal('hide');
-		createUser(user, function(data) {
+		var paragraph = document.getElementById('register-message');
+		var pw1 = $('#password').val();  
+		var pw2 = $('#confirmPassword').val(); 
+		if(pw1 === pw2 && user.username.length != 0 && user.password.length != 0) {
+			createUser(user, function(data) {
 			users.push(data);
 			console.log(users)
-
-			//renderAllPosts();
-		})
+				paragraph.style.color = "green";
+				paragraph.innerHTML = `Successfully registered, welcome ${data.username}`;
+				setTimeout(redirectToHomePage ,1000);
+				function redirectToHomePage(){
+					$('#register').modal('hide');
+					paragraph.innerHTML = "";
+				}
+			})
+		} else if(pw1 !== pw2) {
+			paragraph.style.color = "red";
+			paragraph.innerHTML = `Password did not match!`;
+		} else if (user.username.length == 0 || user.password.length == 0) {
+			paragraph.style.color = "red";
+			paragraph.innerHTML = `Username and password required!`;
+		}		
 	});
 
 	function login(user, callback) {
@@ -169,7 +184,8 @@
 			password: $('#pws').val(),
 		};
 		var paragraph = document.getElementById("message");
-		//var text = document.createTextNode("Username or password wrong, please try again!");
+		var username = document.getElementById("user-name");
+
 		login(user, function(data) {
 			if(data.isLoggedIn) {
 				console.log(users)
@@ -178,6 +194,7 @@
 				setTimeout(redirectToHomePage ,1000);
 				function redirectToHomePage(){
 					location.href = 'home.html';
+					username.innerHTML = data.username;
 				}
 				
 			} else if(data.error){
