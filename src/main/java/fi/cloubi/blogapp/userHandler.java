@@ -148,24 +148,21 @@ import java.io.BufferedReader;
 		public void login(Request baseRequest, HttpServletRequest request, HttpServletResponse response)
 			 throws IOException, ServletException {
 
-
+			JSONObject data = readJSONObject(request);
 			JSONArray array = getUsers();
-			JSONArray filtered = new JSONArray();
-
 			for ( int i=0; i<array.length(); i++ ) {
 				JSONObject user = array.getJSONObject(i);
-				if ( !user.getString("username").equals(request.getParameter("username"))  &&
-				!user.getString("password").equals(request.getParameter("password"))) {
+				if (user.getString("username").equals(data.getString("username")) &&
+				 user.getString("password").equals(data.getString("password"))) {
 					user.put("isLoggedIn", true);
-					filtered.put(user);
+					System.out.println(true);
 				} else {
 					System.out.println("Username or password wrong, please try again!");
 				}
+				
 			}
-			writeUsers(filtered);
-			
-
-			writeJSONResponse(baseRequest, response, "{}");
+			writeUsers(array);
+			writeJSONResponse(baseRequest, response, data.toString());
 
 		}
 
