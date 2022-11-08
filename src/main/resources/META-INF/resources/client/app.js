@@ -140,7 +140,7 @@
 		var user = {
 			username: $('#username').val(),
 			password: $('#password').val(),
-			date: Date.now()
+			date: Date.now(),
 		};
 		$('#register').modal('hide');
 		createUser(user, function(data) {

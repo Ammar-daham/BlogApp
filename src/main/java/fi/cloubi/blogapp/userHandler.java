@@ -9,10 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.util.resource.Resource;
-import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
 import java.nio.file.Paths;
@@ -20,8 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.UUID;
 import java.io.BufferedReader;
-
-import org.eclipse.jetty.server.Server;
 
 
 	/**
@@ -47,7 +42,11 @@ import org.eclipse.jetty.server.Server;
 					createUser(baseRequest, request, response);
 				}
 
-			} 
+			} else if ("/users/login".equals(target)) {
+				if("POST".equals(request.getMethod())) {
+					login(baseRequest, request, response);
+				}
+			}
 		}
 
 		public void getUsers(Request baseRequest, HttpServletResponse response)
@@ -70,8 +69,12 @@ import org.eclipse.jetty.server.Server;
 
 				// Generate new unique ID for the post using random UUID.
 				UUID userId = UUID.randomUUID();
+				Boolean isLoggedIn = false;
+				data.put("userId", userId);
+				data.put("isLoggedIn", isLoggedIn);
 				
-				data.put("id", userId);
+				System.out.println(data.getString("username"));
+				System.out.println(data.getString("password"));
 
 				array.put(data);
 
@@ -139,6 +142,30 @@ import org.eclipse.jetty.server.Server;
 			out.println(data);
 
 			baseRequest.setHandled(true);
+
+		}
+
+		public void login(Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+			 throws IOException, ServletException {
+
+
+			JSONArray array = getUsers();
+			JSONArray filtered = new JSONArray();
+
+			for ( int i=0; i<array.length(); i++ ) {
+				JSONObject user = array.getJSONObject(i);
+				if ( !user.getString("username").equals(request.getParameter("username"))  &&
+				!user.getString("password").equals(request.getParameter("password"))) {
+					user.put("isLoggedIn", true);
+					filtered.put(user);
+				} else {
+					System.out.println("Username or password wrong, please try again!");
+				}
+			}
+			writeUsers(filtered);
+			
+
+			writeJSONResponse(baseRequest, response, "{}");
 
 		}
 

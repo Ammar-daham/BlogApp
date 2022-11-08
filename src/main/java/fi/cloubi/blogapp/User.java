@@ -8,10 +8,24 @@ public class User {
     private UUID userID;
     private String userName;
     private String email;
+    private String password;
+  
+
     private Boolean isUser;
 
     ArrayList<User> users = new ArrayList<>(); 
     
+    public ArrayList<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(ArrayList<User> users) {
+        this.users = users;
+    }
+
+    public User() {
+
+    }
 
     public User(String userName, String email, boolean isUser) {
         this.userID = UUID.randomUUID();
@@ -20,6 +34,18 @@ public class User {
         this.isUser = isUser;
     }
     
+    public void addUser(User user) {
+        users.add(user);
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public Boolean getIsUser() {
         return isUser;
     }
