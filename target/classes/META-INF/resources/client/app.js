@@ -168,16 +168,22 @@
 			username: $('#username-login').val(),
 			password: $('#pws').val(),
 		};
+		var paragraph = document.getElementById("message");
+		//var text = document.createTextNode("Username or password wrong, please try again!");
 		login(user, function(data) {
 			if(data.isLoggedIn) {
 				console.log(users)
-				location.href = 'home.html';
+				paragraph.style.color = "green";
+				paragraph.innerHTML = `Successfully logged In, welcome ${data.username}`;
+				setTimeout(redirectToHomePage ,1000);
+				function redirectToHomePage(){
+					location.href = 'home.html';
+				}
+				
 			} else if(data.error){
 				console.log("Username or password wrong, please try again!")
-				var paragraph = document.getElementById("message");
-				var text = document.createTextNode("Username or password wrong, please try again!");
-
-				paragraph.appendChild(text);
+				paragraph.style.color = "red";
+				paragraph.innerHTML = "Username or password wrong, please try again!";
 			}
 		})
 	});
