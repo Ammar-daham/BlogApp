@@ -42,7 +42,9 @@ class BlogApp {
 		handlers.addHandler(staticHandler);
 		
 		// This will handle the backend
-		handlers.addHandler(new BlogHandler());
+		//handlers.addHandler(new BlogHandler());
+
+		handlers.addHandler(new userHandler());
 
 		server.setHandler(handlers);
 
@@ -262,4 +264,5 @@ class BlogApp {
 
 	}
 
+	
 }

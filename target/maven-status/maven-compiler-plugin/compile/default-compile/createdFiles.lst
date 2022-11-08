@@ -1,2 +1,4 @@
 fi/cloubi/blogapp/BlogApp.class
+fi/cloubi/blogapp/User.class
+fi/cloubi/blogapp/userHandler.class
 fi/cloubi/blogapp/BlogApp$BlogHandler.class

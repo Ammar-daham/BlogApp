@@ -1,6 +1,7 @@
 (function() {
 
 	var posts = [];
+	var users = [];
 
 	function renderBlogPost(post) {
 		var cardWrapper = $('<div class="card-warpper"></div>');
@@ -121,6 +122,31 @@
 			renderAllPosts();
 			$('#postsContainer').removeClass('d-none');
 		});
+	});
+
+	function createUser(user, callback) {
+		$.ajax({
+			url: '/users',
+			dataType: 'json',
+			contentType: 'application/json; charset=UTF-8',
+			type: 'POST',
+			data: JSON.stringify(user),
+			timeout: 5 * 60 * 1000,
+			success: callback
+		});
+	}
+
+	$('#register-btn').click(function() {
+		var user = {
+			username: $('#username').val(),
+			password: $('#password').val(),
+			date: Date.now()
+		};
+		$('#register').modal('hide');
+		createUser(user, function(data) {
+			users.push(data);
+			//renderAllPosts();
+		})
 	});
 
 })();
