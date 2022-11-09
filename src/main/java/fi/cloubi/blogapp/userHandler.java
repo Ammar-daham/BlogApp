@@ -3,6 +3,7 @@ package fi.cloubi.blogapp;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import com.google.gson.Gson;
 import org.json.*;
 
 import javax.servlet.ServletException;
@@ -19,15 +20,15 @@ import java.util.UUID;
 import java.io.BufferedReader;
 
 
-	/**
-	 * Jetty Handler to process ajax requests send by the frontend.
-	 */
-	public class userHandler extends AbstractHandler {
+/**
+ * Jetty Handler to process ajax requests send by the frontend.
+ */
+public class UserHandler extends AbstractHandler {
 
 		// users stored in this json file
 		public static final String dbFile = "./users.json";
 
-		public void handle(String target, Request baseRequest, 
+		public void handle(String target, Request baseRequest,
 			HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
 
 			System.out.println(request.getMethod() + ": " + target);
@@ -105,7 +106,7 @@ import java.io.BufferedReader;
 		private synchronized void writeUsers(JSONArray array) {
 
 			try {
-				Files.write(Paths.get(dbFile), array.toString().getBytes("UTF-8"), 
+				Files.write(Paths.get(dbFile), array.toString().getBytes("UTF-8"),
 					StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 			} catch ( Exception e ) {
 			}
@@ -113,24 +114,24 @@ import java.io.BufferedReader;
 		}
 
 		public JSONObject readJSONObject(HttpServletRequest request) {
-	
+
 			try {
-	
+
 				BufferedReader br = request.getReader();
 				String line = null;
 				StringBuilder sb = new StringBuilder();
-	
+
 				while ( (line = br.readLine()) != null ) {
 					sb.append(line);
 				}
-	
+
 				return new JSONObject(sb.toString());
-		
+
 			} catch ( Exception e ) {
 			}
-		
+
 			return null;
-		
+
 		}
 
 		private void writeJSONResponse(Request baseRequest, HttpServletResponse response,
@@ -158,7 +159,7 @@ import java.io.BufferedReader;
 				 user.getString("password").equals(data.getString("password"))) {
 					user.put("isLoggedIn", true);
 					data.put("isLoggedIn", true);
-					data.put("error", false);					
+					data.put("error", false);
 				} else {
 					data.put("error", true);
 					System.out.println("Username or password wrong, please try again!");
@@ -174,20 +175,19 @@ import java.io.BufferedReader;
 		public void logout(Request baseRequest, HttpServletRequest request, HttpServletResponse response)
 			 throws IOException, ServletException {
 
-			JSONObject data = readJSONObject(request);
-			JSONArray array = getUsers();
-			for ( int i=0; i<array.length(); i++ ) {
-				JSONObject user = array.getJSONObject(i);
+			String username = readJSONObject(request).getString("username");
+			JSONArray users = getUsers();
+			for ( int i=0; i<users.length(); i++ ) {
+				JSONObject user = users.getJSONObject(i);
+				if(user.getString("username").equals(username)) {
 					user.put("isLoggedIn", false);
-					data.put("isLoggedIn", false);
+				}
 			}
-			writeUsers(array);
-			writeJSONResponse(baseRequest, response, data.toString());
-			System.out.println(data.toString());
-
+			writeUsers(users);
+			writeJSONResponse(baseRequest, response, users.toString());
 		}
 
-		
+
 
 	}
 

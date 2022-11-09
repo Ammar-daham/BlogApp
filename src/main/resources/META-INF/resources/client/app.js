@@ -24,9 +24,8 @@
 		return cardWrapper;
 	}
 	
-	function renderAllPosts(username) {
+	function renderAllPosts() {
 		var container = $('#posts');
-		$('#userLoggedIn').text(username);
 		container.empty();
 		$.each(posts, function(index, post) {
 			container.append(renderBlogPost(post));
@@ -41,20 +40,52 @@
 		$('#viewBody').text(post.body);
 	}
 
-	function removePost(id) {
-		$('#postsContainer').addClass('d-none');
-		deletePost(id, function() {
-			var filtered = [];
-			$.each(posts, function(index, post) {
-				if ( post.id != id ) {
-					filtered.push(post);
-				}
+	   function removePost(id) {
+	   		$('#postsContainer').addClass('d-none');
+	   		deletePost(id, function() {
+				   	var filtered = [];
+					$.each(posts, function (index, post) {
+						if(post.id != id) {
+							filtered.push(post);
+						}
+				});
+			   posts = filtered;
+			   renderAllPosts();
+			   $('#postsContainer').removeClass('d-none');
 			});
-			posts = filtered;
-			renderAllPosts();
-			$('#postsContainer').removeClass('d-none');
-		});
-	}
+	   }
+
+
+
+
+
+
+
+
+
+
+
+
+	/*function removepost(id) {*/
+	/*	$('#postscontainer').addclass('d-none');*/
+	/*	const username = localstorage.getitem("username")*/
+	/*	var payload = {*/
+	/*		id: id,*/
+	/*		username: username*/
+	/*	}*/
+	/*	deletepost(payload, function() {*/
+	/*		var filtered = [];*/
+	/*		$.each(posts, function(index, post) {*/
+	/*			if ( post.id != id ) {*/
+	/*				filtered.push(post);*/
+	/*			}*/
+	/*		});*/
+	/*		posts = filtered;*/
+	/*		renderallposts();*/
+	/*		$('#postscontainer').removeclass('d-none');*/
+	/*			location.href = 'home.html';       */
+	/*	});*/
+	/*}*/
 
 	function getPosts(callback) {
 		$.ajax({
@@ -77,7 +108,7 @@
 			success: callback
 		});
 	}
-
+	       //   '/posts?id=' + payload.id + '&username=' + payload.username,
 	function deletePost(id, callback) {
 		$.ajax({
 			url: '/posts/' + id,
@@ -86,7 +117,7 @@
 			timeout: 5 * 60 * 1000,
 			success: callback,
 			error: function(e) {
-				console.log(e);
+				$('error-message').innerText = e;
 			}
 		});
 	}
@@ -97,15 +128,20 @@
 	});
 
 	$('#saveBlogPost').click(function() {
+		const username = localStorage.getItem("username");
+
 		var post = {
+			username: username,
 			title: $('#blogTitle').val(),
 			body: $('#blogBody').val(),
-			date: Date.now()
+			date: Date.now(),
 		};
 		$('#newPost').modal('hide');
 		savePost(post, function(data) {
 			posts.push(data);
 			renderAllPosts();
+			console.log(posts);
+			console.log(users);
 		})
 	});
 
@@ -148,14 +184,12 @@
 		var pw2 = $('#confirmPassword').val(); 
 		if(pw1 === pw2 && user.username.length != 0 && user.password.length != 0) {
 			createUser(user, function(data) {
-			users.push(data);
-			console.log(users)
+				//users.push(data);
 				paragraph.style.color = "green";
 				paragraph.innerHTML = `Successfully registered, welcome ${data.username}`;
 				setTimeout(redirectToHomePage ,1000);
 				function redirectToHomePage(){
 					$('#register').modal('hide');
-					paragraph.innerHTML = "";
 				}
 			})
 		} else if(pw1 !== pw2) {
@@ -163,7 +197,7 @@
 			paragraph.innerHTML = `Password did not match!`;
 		} else if (user.username.length == 0 || user.password.length == 0) {
 			paragraph.style.color = "red";
-			paragraph.innerHTML = `Username and password required!`;
+			paragraph.innerHTML = `username and password required!`;
 		}		
 	});
 
@@ -184,32 +218,58 @@
 			username: $('#username-login').val(),
 			password: $('#pws').val(),
 		};
+
 		var paragraph = document.getElementById("message");
-		//var usernameLogin = document.querySelector("#user");
 		
 		if(user.username.length != 0 && user.password.length != 0) {
 			login(user, function(data) {
 				if(data.isLoggedIn) {
+					user.isLoggedIn = data.isLoggedIn;
+					console.log(user)
+					users.push(user);
 					console.log(users)
+					localStorage.setItem("username", user.username);
 					paragraph.style.color = "green";
 					$("#message").text(`Successfully logged In, welcome ${data.username}`);
 					setTimeout(redirectToHomePage ,1000);
 					function redirectToHomePage(){
-						console.log(data.username)
-						renderAllPosts(data.username);
+						console.log(users)
 						location.href = 'home.html';
 					}
-					
 				} else if(data.error){
-					console.log("Username or password wrong, please try again!")
+					console.log("username or password wrong, please try again!")
 					paragraph.style.color = "red";
-					$("#message").text("Username or password wrong, please try again!");
+					$("#message").text("username or password wrong, please try again!");
 				}
 			})
 		} else {
 			paragraph.style.color = "red";
-			$("#message").text("Username and password required!");
+			$("#message").text("username and password required!");
 		}
 	});
+
+	function logout(payload, callback) {
+		$.ajax({
+			url: '/users/logout',
+			dataType: 'json',
+			contentType: 'application/json; charset=UTF-8',
+			type: 'POST',
+			data: JSON.stringify(payload),
+			timeout: 5 * 60 * 1000,
+			success: callback
+		});
+	}
+
+	$('#logout-btn').click(function() {
+		console.log("logged out")
+		const username = localStorage.getItem("username");
+		var payload = {
+			username: username
+		}
+		logout(payload, function (data) {
+			  location.href="index.html"
+		});
+	})
+
 
 })();

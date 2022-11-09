@@ -44,7 +44,7 @@ class BlogApp {
 		// This will handle the backend
 		handlers.addHandler(new BlogHandler());
 
-		handlers.addHandler(new userHandler());
+		handlers.addHandler(new UserHandler());
 
 		server.setHandler(handlers);
 
@@ -66,25 +66,15 @@ class BlogApp {
 
 			System.out.println(request.getMethod() + ": " + target);
 
-			if ( "/posts".equals(target) ) {
-
-				if ( "GET".equals(request.getMethod()) ) {
-					getPosts(baseRequest, response);
-				}
-
-				else if ( "POST".equals(request.getMethod()) ) {
-					createPost(baseRequest, request, response);
-				}
-
-			} 
-
-			else if ( target.startsWith("/posts/") ) {
-
-				if ( "DELETE".equals(request.getMethod()) ) {
+			if (request.getMethod().equals("GET") && target.equals("/posts") ) {
+				getPosts(baseRequest, response);
+			}
+			if (request.getMethod().equals("POST") && target.equals("/posts") ) {
+				createPost(baseRequest, request, response);
+			}
+			if (request.getMethod().equals("DELETE") && target.contains("/posts/") ) {
 					String postId = target.substring(7);
 					deletePost(baseRequest, request, response, postId);
-				}
-
 			}
 
 		}
@@ -208,23 +198,26 @@ class BlogApp {
 		 * @param baseRequest Jetty Request object.
 		 * @param request The HttpServletRequest object to read the request data from.
 		 * @param response The HttpServletResponse object to write response to.
-		 * @param postId The ID of the post to remove.
 		 * @throws IOException
 		 * @throws ServletException
 		 */
-		public void deletePost(Request baseRequest, HttpServletRequest request, HttpServletResponse response,
-			String postId)
+		public void deletePost(Request baseRequest, HttpServletRequest request, HttpServletResponse response, String postId)
 			 throws IOException, ServletException {
+
+			//String postId = request.getParameter("id");
+			//String username = request.getParameter("username");
 
 			int id = Integer.parseInt(postId);
 
-			JSONArray array = getPosts();
+			JSONArray posts = getPosts();
 			JSONArray filtered = new JSONArray();
+			System.out.println("postsId " + id);
 
-			for ( int i=0; i<array.length(); i++ ) {
-				JSONObject post = array.getJSONObject(i);
-				if ( post.getInt("id") != id ) {
+			for ( int i=0; i<posts.length(); i++ ) {
+				JSONObject post = posts.getJSONObject(i);
+				if ( post.getInt("id") != id  ) {
 					filtered.put(post);
+					//posts.remove(id);
 				} else {
 					System.out.println("Deleted post with id " + id);
 				}
