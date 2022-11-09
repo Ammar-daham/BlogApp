@@ -46,6 +46,10 @@ import java.io.BufferedReader;
 				if("POST".equals(request.getMethod())) {
 					login(baseRequest, request, response);
 				}
+			} else if ("/users/logout".equals(target)) {
+				if("POST".equals(request.getMethod())) {
+					logout(baseRequest, request, response);
+				}
 			}
 		}
 
@@ -153,12 +157,29 @@ import java.io.BufferedReader;
 				if (user.getString("username").equals(data.getString("username")) &&
 				 user.getString("password").equals(data.getString("password"))) {
 					user.put("isLoggedIn", true);
-					data.put("isLoggedIn", true);					
+					data.put("isLoggedIn", true);
+					data.put("error", false);					
 				} else {
 					data.put("error", true);
 					System.out.println("Username or password wrong, please try again!");
 				}
 				
+			}
+			writeUsers(array);
+			writeJSONResponse(baseRequest, response, data.toString());
+			System.out.println(data.toString());
+
+		}
+
+		public void logout(Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+			 throws IOException, ServletException {
+
+			JSONObject data = readJSONObject(request);
+			JSONArray array = getUsers();
+			for ( int i=0; i<array.length(); i++ ) {
+				JSONObject user = array.getJSONObject(i);
+					user.put("isLoggedIn", false);
+					data.put("isLoggedIn", false);
 			}
 			writeUsers(array);
 			writeJSONResponse(baseRequest, response, data.toString());

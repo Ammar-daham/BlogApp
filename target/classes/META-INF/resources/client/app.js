@@ -23,9 +23,10 @@
 		});
 		return cardWrapper;
 	}
-
-	function renderAllPosts() {
+	
+	function renderAllPosts(username) {
 		var container = $('#posts');
+		$('#userLoggedIn').text(username);
 		container.empty();
 		$.each(posts, function(index, post) {
 			container.append(renderBlogPost(post));
@@ -184,25 +185,31 @@
 			password: $('#pws').val(),
 		};
 		var paragraph = document.getElementById("message");
-		var username = document.getElementById("user-name");
-
-		login(user, function(data) {
-			if(data.isLoggedIn) {
-				console.log(users)
-				paragraph.style.color = "green";
-				paragraph.innerHTML = `Successfully logged In, welcome ${data.username}`;
-				setTimeout(redirectToHomePage ,1000);
-				function redirectToHomePage(){
-					location.href = 'home.html';
-					username.innerHTML = data.username;
+		//var usernameLogin = document.querySelector("#user");
+		
+		if(user.username.length != 0 && user.password.length != 0) {
+			login(user, function(data) {
+				if(data.isLoggedIn) {
+					console.log(users)
+					paragraph.style.color = "green";
+					$("#message").text(`Successfully logged In, welcome ${data.username}`);
+					setTimeout(redirectToHomePage ,1000);
+					function redirectToHomePage(){
+						console.log(data.username)
+						renderAllPosts(data.username);
+						location.href = 'home.html';
+					}
+					
+				} else if(data.error){
+					console.log("Username or password wrong, please try again!")
+					paragraph.style.color = "red";
+					$("#message").text("Username or password wrong, please try again!");
 				}
-				
-			} else if(data.error){
-				console.log("Username or password wrong, please try again!")
-				paragraph.style.color = "red";
-				paragraph.innerHTML = "Username or password wrong, please try again!";
-			}
-		})
+			})
+		} else {
+			paragraph.style.color = "red";
+			$("#message").text("Username and password required!");
+		}
 	});
 
 })();
