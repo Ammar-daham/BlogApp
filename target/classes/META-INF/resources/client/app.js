@@ -9,11 +9,13 @@
 		var cardBody = $('<div class="card-body"></div>');
 		var cardTitle = $('<h5 class="card-title"></div>');
 		var cardText = $('<p class="card-text"></p>');
+		var cardUsername = $('<p class="card-text"></p>');
 		var viewLink = $('<a href="#" class="card-link">View this post</a>');
 		var deleteLink = $('<a href="#" class="card-link">Delete</a>');
 		cardTitle.text(post.title);
 		cardText.text(new Date(post.date).toLocaleDateString());
-		cardBody.append(cardTitle, cardText, viewLink, deleteLink).appendTo(card);
+		cardUsername.text("name: " + post.username);
+		cardBody.append(cardTitle, cardText, cardUsername, viewLink, deleteLink).appendTo(card);
 		card.appendTo(cardWrapper);
 		viewLink.click(function() {
 			viewPost(post);
@@ -64,38 +66,6 @@
 			});
 	   }
 
-
-
-
-
-
-
-
-
-
-
-
-	/*function removepost(id) {*/
-	/*	$('#postscontainer').addclass('d-none');*/
-	/*	const username = localstorage.getitem("username")*/
-	/*	var payload = {*/
-	/*		id: id,*/
-	/*		username: username*/
-	/*	}*/
-	/*	deletepost(payload, function() {*/
-	/*		var filtered = [];*/
-	/*		$.each(posts, function(index, post) {*/
-	/*			if ( post.id != id ) {*/
-	/*				filtered.push(post);*/
-	/*			}*/
-	/*		});*/
-	/*		posts = filtered;*/
-	/*		renderallposts();*/
-	/*		$('#postscontainer').removeclass('d-none');*/
-	/*			location.href = 'home.html';       */
-	/*	});*/
-	/*}*/
-
 	function getPosts(callback) {
 		$.ajax({
 			url: '/posts',
@@ -117,7 +87,7 @@
 			success: callback
 		});
 	}
-	       //   '/posts?id=' + payload.id + '&username=' + payload.username,
+
 	function deletePost(payload, callback) {
 		$.ajax({
 			url: '/posts',

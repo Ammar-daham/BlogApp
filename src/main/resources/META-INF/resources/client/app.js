@@ -9,11 +9,13 @@
 		var cardBody = $('<div class="card-body"></div>');
 		var cardTitle = $('<h5 class="card-title"></div>');
 		var cardText = $('<p class="card-text"></p>');
+		var cardUsername = $('<p class="card-username"></p>');
 		var viewLink = $('<a href="#" class="card-link">View this post</a>');
 		var deleteLink = $('<a href="#" class="card-link">Delete</a>');
 		cardTitle.text(post.title);
 		cardText.text(new Date(post.date).toLocaleDateString());
-		cardBody.append(cardTitle, cardText, viewLink, deleteLink).appendTo(card);
+		cardUsername.text("name: " + post.username);
+		cardBody.append(cardTitle, cardText, cardUsername, viewLink, deleteLink).appendTo(card);
 		card.appendTo(cardWrapper);
 		viewLink.click(function() {
 			viewPost(post);
