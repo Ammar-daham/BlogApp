@@ -42,14 +42,23 @@
 
 	   function removePost(id) {
 	   		$('#postsContainer').addClass('d-none');
-	   		deletePost(id, function() {
+		   var payload = {
+			   username: localStorage.getItem("username"),
+			   id: id
+		   };
+	   		deletePost(payload, function() {
+				   //console.log("username" + username)
 				   	var filtered = [];
 					$.each(posts, function (index, post) {
-						if(post.id != id) {
+						if(post.id == id && post.username == payload.username) {
+							console.log("deleted " + id );
+						} else {
 							filtered.push(post);
+							console.log("You can not delete other user's post!")
 						}
 				});
 			   posts = filtered;
+			   console.log(posts);
 			   renderAllPosts();
 			   $('#postsContainer').removeClass('d-none');
 			});
@@ -109,11 +118,12 @@
 		});
 	}
 	       //   '/posts?id=' + payload.id + '&username=' + payload.username,
-	function deletePost(id, callback) {
+	function deletePost(payload, callback) {
 		$.ajax({
-			url: '/posts/' + id,
+			url: '/posts',
 			dataType: 'json',
 			type: 'DELETE',
+			data: JSON.stringify(payload),
 			timeout: 5 * 60 * 1000,
 			success: callback,
 			error: function(e) {

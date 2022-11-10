@@ -20,6 +20,7 @@ import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.io.BufferedReader;
+import java.util.UUID;
 
 import org.eclipse.jetty.server.Server;
 
@@ -72,9 +73,9 @@ class BlogApp {
 			if (request.getMethod().equals("POST") && target.equals("/posts") ) {
 				createPost(baseRequest, request, response);
 			}
-			if (request.getMethod().equals("DELETE") && target.contains("/posts/") ) {
-					String postId = target.substring(7);
-					deletePost(baseRequest, request, response, postId);
+			if (request.getMethod().equals("DELETE") && target.contains("/posts") ) {
+					//String postId = target.substring(7);
+					deletePost(baseRequest, request, response);
 			}
 
 		}
@@ -167,25 +168,11 @@ class BlogApp {
 			if ( data != null ) {
 
 				JSONArray array = getPosts();
-
-				// Generate new unique ID for the post.
-				// It is one higher than the highest ID currently in the database.
-				int id = 1;
-				for ( int i=0; i<array.length(); i++ ) {
-					int postId = array.getJSONObject(i).getInt("id");
-					if ( postId >= id ) {
-						id = postId + 1;
-					}
-				}
-
+				UUID id = UUID.randomUUID();
 				data.put("id", id);
-
 				array.put(data);
-
 				System.out.println("Created post with id " + id);
-
 				writePosts(array);
-
 				writeJSONResponse(baseRequest, response, data.toString());
 
 			}
@@ -201,32 +188,35 @@ class BlogApp {
 		 * @throws IOException
 		 * @throws ServletException
 		 */
-		public void deletePost(Request baseRequest, HttpServletRequest request, HttpServletResponse response, String postId)
+		public void deletePost(Request baseRequest, HttpServletRequest request, HttpServletResponse response)
 			 throws IOException, ServletException {
 
 			//String postId = request.getParameter("id");
 			//String username = request.getParameter("username");
 
-			int id = Integer.parseInt(postId);
+			JSONObject data = readPostJSONObject(request);
+			String username = data.getString("username");
+			String id = data.getString("id");
+			System.out.println("username " + username);
+
+			//int id = Integer.parseInt(postId);
 
 			JSONArray posts = getPosts();
 			JSONArray filtered = new JSONArray();
 			System.out.println("postsId " + id);
+			//System.out.println("username " + username);
 
 			for ( int i=0; i<posts.length(); i++ ) {
 				JSONObject post = posts.getJSONObject(i);
-				if ( post.getInt("id") != id  ) {
-					filtered.put(post);
-					//posts.remove(id);
-				} else {
+				if (post.getString("id").equals(id) && post.getString("username").equals(username)) {
 					System.out.println("Deleted post with id " + id);
+				} else {
+					filtered.put(post);
+
 				}
 			}
-
 			writePosts(filtered);
-
 			writeJSONResponse(baseRequest, response, "{}");
-
 		}
 
 		/**
